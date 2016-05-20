@@ -51,7 +51,7 @@ var Scrollable = Events.extend({
         var the = this;
 
         options = object.assign(true, {}, defaults, options);
-        the.Super(options);
+        Scrollable.parent(the, options);
 
         // init node
         var containerEl = the[_containerEl] = selector.query(options.containerEl)[0] || doc;
@@ -120,7 +120,7 @@ var Scrollable = Events.extend({
         var the = this;
 
         event.un(the[_containerEl], SCROLL_EVENT_TYPE, the[_onScroll]);
-        the.Super.destroy();
+        Scrollable.parent.destroy(the);
     }
 });
 var _onScroll = Scrollable.sole();
