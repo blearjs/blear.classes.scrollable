@@ -1,7 +1,7 @@
 {
   "name": "blear.classes.scrollable",
   "version": "1.0.0",
-  "description": "可拖拽的类",
+  "description": "可滚动的类",
   "scripts": {
     "live": "browser-sync start --config bs-config.js"
   },
@@ -15,7 +15,7 @@
   "keywords": [
     "blear",
     "classes",
-    "draggable",
+    "scrollable",
     "cloudcome",
     "ydr.me"
   ],
