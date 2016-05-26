@@ -12,21 +12,21 @@
  *     |    |
  *     -----
  * ```
- * 
+ *
  * @author ydr.me
  * @create 2016-04-25 17:07
  */
 
 'use strict';
 
-var Events =    require('blear.classes.events');
-var object =    require('blear.utils.object');
-var time =      require('blear.utils.time');
-var number =    require('blear.utils.number');
-var selector =  require('blear.core.selector');
+var Events = require('blear.classes.events');
+var object = require('blear.utils.object');
+var time = require('blear.utils.time');
+var number = require('blear.utils.number');
+var selector = require('blear.core.selector');
 var attribute = require('blear.core.attribute');
-var event =     require('blear.core.event');
-var layout =    require('blear.core.layout');
+var event = require('blear.core.event');
+var layout = require('blear.core.layout');
 
 var win = window;
 var doc = win.document;
@@ -43,7 +43,13 @@ var defaults = {
      * 容器，默认是 document
      * @type HTMLElement|String|null
      */
-    containerEl: null
+    containerEl: null,
+
+    /**
+     * 偏移值
+     * @type Number
+     */
+    offset: 10
 };
 var Scrollable = Events.extend({
     className: 'Scrollable',
@@ -68,8 +74,8 @@ var Scrollable = Events.extend({
             var scrollerOuterHeight = layout.outerHeight(scrollerEl) + scrollerMarginVertical;
             var containerWidth = layout.width(containerEl);
             var containerHeight = layout.height(containerEl);
-            var maxScrollLeft = scrollerOuterWidth - containerWidth;
-            var maxScrollTop = scrollerOuterHeight - containerHeight;
+            var maxScrollLeft = Math.abs(scrollerOuterWidth - containerWidth) - options.offset;
+            var maxScrollTop = Math.abs(scrollerOuterHeight - containerHeight) - options.offset;
             var scrollLeft = layout.scrollLeft(containerEl);
             var scrollTop = layout.scrollTop(containerEl);
             var meta = {
@@ -79,15 +85,15 @@ var Scrollable = Events.extend({
                 maxScrollTop: maxScrollTop
             };
 
-            if (scrollTop === 0) {
+            if (scrollTop <= options.offset) {
                 the.emit('scrollTop', meta);
-            } else if (scrollTop === maxScrollTop) {
+            } else if (scrollTop >= maxScrollTop) {
                 the.emit('scrollBottom', meta);
             }
 
-            if (scrollLeft === 0) {
+            if (scrollLeft <= options.offset) {
                 the.emit('scrollLeft', meta);
-            } else if (scrollLeft === maxScrollLeft) {
+            } else if (scrollLeft >= maxScrollLeft) {
                 the.emit('scrollRight', meta);
             }
 
