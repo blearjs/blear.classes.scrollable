@@ -1,6 +1,6 @@
 {
   "name": "blear.classes.scrollable",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Class 可滚动的",
   "scripts": {
     "live": "browser-sync start --config bs-config.js"
@@ -38,9 +38,7 @@
     "blear.classes.events": "1.x",
     "blear.utils.object": "1.x",
     "blear.utils.time": "1.x",
-    "blear.utils.number": "1.x",
     "blear.core.selector": "1.x",
-    "blear.core.attribute": "1.x",
     "blear.core.event": "1.x",
     "blear.core.layout": "1.x"
   },

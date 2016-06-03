@@ -1,18 +1,5 @@
 /**
  * 可滚动的
- * 图示
- * ```
- *      _____ ----------> scroller
- *     |    |
- *     |    |
- * ====|====|==== ------> container
- *     |    |
- * ====|====|====
- *     |    |
- *     |    |
- *     -----
- * ```
- *
  * @author ydr.me
  * @create 2016-04-25 17:07
  */
@@ -22,34 +9,33 @@
 var Events = require('blear.classes.events');
 var object = require('blear.utils.object');
 var time = require('blear.utils.time');
-var number = require('blear.utils.number');
 var selector = require('blear.core.selector');
-var attribute = require('blear.core.attribute');
 var event = require('blear.core.event');
 var layout = require('blear.core.layout');
 
 var win = window;
 var doc = win.document;
+var htmlEl = doc.documentElement;
 var bodyEl = doc.body;
 var SCROLL_EVENT_TYPE = 'scroll touchstart touchmove touchend touchcancel';
 var defaults = {
     /**
-     * 滚动的元素
+     * 滚动的容器元素
      * @type HTMLElement|String|null
      */
-    scrollerEl: null,
+    el: null,
 
     /**
-     * 容器，默认是 document
-     * @type HTMLElement|String|null
-     */
-    containerEl: null,
-
-    /**
-     * 偏移值
+     * 水平偏移值
      * @type Number
      */
-    offset: 10
+    offsetX: 20,
+
+    /**
+     * 垂直偏移值
+     * @type Number
+     */
+    offsetY: 20
 };
 var Scrollable = Events.extend({
     className: 'Scrollable',
@@ -58,26 +44,24 @@ var Scrollable = Events.extend({
 
         options = object.assign(true, {}, defaults, options);
         Scrollable.parent(the, options);
+        the[_maxScrollLeft] = 0;
+        the[_maxScrollTop] = 0;
 
         // init node
-        var containerEl = the[_containerEl] = selector.query(options.containerEl)[0] || doc;
-        var scrollerEl = selector.query(options.scrollerEl)[0] || bodyEl;
+        var containerEl = the[_containerEl] = selector.query(options.el)[0] || doc;
+        the[_isRootContainerEl] = isRootContainerEl(containerEl);
         var lastScrollLeft = 0;
         var lastScrollTop = 0;
 
         // init event
         event.on(containerEl, SCROLL_EVENT_TYPE, the[_onScroll] = function (ev) {
-            var scrollerOuterWidth = layout.outerWidth(scrollerEl);
-            var scrollerMarginVertical =
-                number.parseFloat(attribute.style(scrollerEl, 'marginTop')) +
-                number.parseFloat(attribute.style(scrollerEl, 'marginBottom'));
-            var scrollerOuterHeight = layout.outerHeight(scrollerEl) + scrollerMarginVertical;
-            var containerWidth = layout.width(containerEl);
-            var containerHeight = layout.height(containerEl);
-            var maxScrollLeft = Math.abs(scrollerOuterWidth - containerWidth) - options.offset;
-            var maxScrollTop = Math.abs(scrollerOuterHeight - containerHeight) - options.offset;
             var scrollLeft = layout.scrollLeft(containerEl);
             var scrollTop = layout.scrollTop(containerEl);
+            var offsetX = options.offsetX;
+            var offsetY = options.offsetY;
+            var maxScrollLeft = the[_maxScrollLeft] - offsetX;
+            var maxScrollTop = the[_maxScrollTop] - offsetY;
+
             var meta = {
                 scrollLeft: scrollLeft,
                 scrollTop: scrollTop,
@@ -85,15 +69,15 @@ var Scrollable = Events.extend({
                 maxScrollTop: maxScrollTop
             };
 
-            if (scrollTop <= options.offset) {
+            if (scrollTop <= offsetY && scrollTop < lastScrollTop) {
                 the.emit('scrollTop', meta);
-            } else if (scrollTop >= maxScrollTop) {
+            } else if (scrollTop >= maxScrollTop && scrollTop > lastScrollTop) {
                 the.emit('scrollBottom', meta);
             }
 
-            if (scrollLeft <= options.offset) {
+            if (scrollLeft <= offsetX && scrollLeft < lastScrollLeft) {
                 the.emit('scrollLeft', meta);
-            } else if (scrollLeft >= maxScrollLeft) {
+            } else if (scrollLeft >= maxScrollLeft && scrollLeft > lastScrollLeft) {
                 the.emit('scrollRight', meta);
             }
 
@@ -114,8 +98,28 @@ var Scrollable = Events.extend({
         });
 
         time.nextTick(function () {
+            the.update();
             the[_onScroll]();
         });
+    },
+
+
+    /**
+     * 更新位置信息
+     * @returns {Scrollable}
+     */
+    update: function () {
+        var the = this;
+
+        if (the[_isRootContainerEl]) {
+            the[_maxScrollLeft] = layout.scrollWidth(the[_containerEl]) - layout.width(win);
+            the[_maxScrollTop] = layout.scrollHeight(the[_containerEl]) - layout.height(win);
+        } else {
+            the[_maxScrollLeft] = layout.scrollWidth(the[_containerEl]) - layout.width(the[_containerEl]);
+            the[_maxScrollTop] = layout.scrollHeight(the[_containerEl]) - layout.height(the[_containerEl]);
+        }
+
+        return this;
     },
 
 
@@ -131,6 +135,13 @@ var Scrollable = Events.extend({
 });
 var _onScroll = Scrollable.sole();
 var _containerEl = Scrollable.sole();
+var _isRootContainerEl = Scrollable.sole();
+var _maxScrollLeft = Scrollable.sole();
+var _maxScrollTop = Scrollable.sole();
+var isRootContainerEl = function (el) {
+    return el === win || el === doc || el === htmlEl || el === bodyEl;
+};
+
 
 Scrollable.defaults = defaults;
 module.exports = Scrollable;
