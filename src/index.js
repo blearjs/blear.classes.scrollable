@@ -115,8 +115,8 @@ var Scrollable = Events.extend({
             the[_maxScrollLeft] = layout.scrollWidth(the[_containerEl]) - layout.width(win);
             the[_maxScrollTop] = layout.scrollHeight(the[_containerEl]) - layout.height(win);
         } else {
-            the[_maxScrollLeft] = layout.scrollWidth(the[_containerEl]) - layout.width(the[_containerEl]);
-            the[_maxScrollTop] = layout.scrollHeight(the[_containerEl]) - layout.height(the[_containerEl]);
+            the[_maxScrollLeft] = layout.scrollWidth(the[_containerEl]) - layout.outerWidth(the[_containerEl]);
+            the[_maxScrollTop] = layout.scrollHeight(the[_containerEl]) - layout.outerHeight(the[_containerEl]);
         }
 
         return this;
