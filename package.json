@@ -1,6 +1,6 @@
 {
   "name": "blear.classes.scrollable",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Class 可滚动的",
   "scripts": {
     "live": "browser-sync start --config bs-config.js"

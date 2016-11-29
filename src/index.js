@@ -130,7 +130,7 @@ var Scrollable = Events.extend({
         var the = this;
 
         event.un(the[_containerEl], SCROLL_EVENT_TYPE, the[_onScroll]);
-        Scrollable.parent.destroy(the);
+        Scrollable.invoke('destroy', the);
     }
 });
 var _onScroll = Scrollable.sole();
